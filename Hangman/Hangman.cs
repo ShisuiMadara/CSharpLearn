@@ -45,33 +45,27 @@ public class Hangman {
     
     }
 
-    private string FindWord() {
-
-        String[] wordList = {
-        "The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "and",
-        "finds", "itself", "in", "a", "lush", "green", "meadow", "where", "birds", "sing",
-        "and", "butterflies", "dance", "amidst", "the", "fragrant", "flowers", "underneath",
-        "the", "clear", "blue", "sky", "It", "was", "a", "beautiful", "day", "filled",
-        "with", "joy", "and", "serenity", "as", "the", "world", "seemed", "to",
-        "pause", "for", "a", "moment", "of", "peace", "and", "harmony", "Nature",
-        "whispered", "its", "secrets", "to", "those", "who", "listened", "and", "revealed",
-        "the", "magic", "that", "dwelled", "within", "each", "and", "every", "living",
-        "thing", "The", "sun", "set", "in", "a", "blaze", "of", "colors",
-        "painting", "the", "horizon", "with", "warmth", "and", "promise", "of", "a",
-        "new", "beginning", "as", "the", "night", "unfolded", "its", "mysteries",
-        "and", "the", "stars", "twinkled", "with", "eternal", "glory", "endlessly", "watching",
-        "over", "the", "world", "below"
-    };
-
-        Random rnd = new();
-        int randomIndex = rnd.Next(0, 150);
-
-        return wordList[randomIndex];
-
+  private async Task<string> FindWord()
+{
+    HttpClient client = new();
+    string uri = "https://random-word-api.herokuapp.com/word";
+    try
+    {
+        using HttpResponseMessage response = await client.GetAsync(uri);
+        response.EnsureSuccessStatusCode(); 
+        string resp = await response.Content.ReadAsStringAsync();
+        return resp;
+    }
+    catch (HttpRequestException e)
+    {
+        throw new Exception("API failed to fetch: " + e.Message);
     }
 
-    public void Play () {
-        string word = FindWord();
+}
+
+
+    public async void Play () {
+        string word = await FindWord();
         string guess = ""; 
         for(int i =0; i<word.Length; ++i){
             guess += "_";
